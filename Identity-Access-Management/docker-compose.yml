@@ -1,0 +1,44 @@
+services:
+  postgres-db:
+    image: postgres:18.1-alpine
+    container_name: database
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=identitysystem
+      - POSTGRES_PASSWORD=identitysystempassword
+      - POSTGRES_DB=identity_system
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - identity-system-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U identitysystem -d identity_system"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  identity-system-app:
+    build: .
+    container_name: identity-system-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/identity_system
+      SPRING_DATASOURCE_USERNAME: identitysystem
+      SPRING_DATASOURCE_PASSWORD: identitysystempassword
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - identity-system-network
+
+volumes:
+  postgres-data:
+
+networks:
+  identity-system-network:
+    driver: bridge
