@@ -7,7 +7,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "refresh_tokens")
+@Table(name = "refresh_tokens", indexes = {
+        @Index(name = "idx_token_hash", columnList = "token_hash")
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +26,7 @@ public class RefreshToken {
     private User user;
 
     @NotBlank(message = "Token hash cannot be blank")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, name = "token_hash")
     private String tokenHash;
 
     @Column(nullable = false, name = "expires_at")
@@ -33,6 +35,13 @@ public class RefreshToken {
     @Column(nullable = false, name = "is_revoked")
     @Builder.Default
     private Boolean isRevoked = false;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "replace_by_id")
+    private RefreshToken replaceBy;
+
+    @Column(name = "revocation_reason")
+    private String revocationReason;
 
     @Column(name = "ip_address")
     private String ipAddress;
@@ -46,18 +55,27 @@ public class RefreshToken {
     @Column(name = "revoked_at")
     private LocalDateTime revokedAt;
 
+
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }
 
     public boolean isValid() {
-        return !isRevoked && !isExpired();
+        return !isRevoked && !isExpired() && replaceBy == null;
     }
 
 
-    public void revoke() {
+    public void revoke(String reason) {
         this.isRevoked = true;
         this.revokedAt = LocalDateTime.now();
+        this.revocationReason = reason;
+    }
+
+    public void rotate(RefreshToken newToken) {
+        this.isRevoked = true;
+        this.revokedAt = LocalDateTime.now();
+        this.revocationReason = "Token rotated";
+        this.replaceBy = newToken;
     }
 
     @PrePersist
