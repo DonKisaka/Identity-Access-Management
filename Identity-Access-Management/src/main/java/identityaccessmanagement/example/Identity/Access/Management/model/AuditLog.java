@@ -7,7 +7,11 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "audit_logs")
+@Table(name = "audit_logs", indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_audit_created_at", columnList = "created_at"),
+        @Index(name = "idx_audit_action", columnList = "action")
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,6 +32,12 @@ public class AuditLog {
     private String action;
 
     @Column
+    private String status;
+
+    @Column
+    private String severity;
+
+    @Column
     private String resource;
 
     @Column(name = "ip_address")
@@ -41,4 +51,9 @@ public class AuditLog {
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }
