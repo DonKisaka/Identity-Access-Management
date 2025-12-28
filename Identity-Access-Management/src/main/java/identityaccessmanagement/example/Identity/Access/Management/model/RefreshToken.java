@@ -32,7 +32,7 @@ public class RefreshToken {
 
     @Column(nullable = false, name = "is_revoked")
     @Builder.Default
-    private Boolean isRevoked;
+    private Boolean isRevoked = false;
 
     @Column(name = "ip_address")
     private String ipAddress;
