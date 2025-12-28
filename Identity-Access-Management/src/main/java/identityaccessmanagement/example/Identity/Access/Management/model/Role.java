@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.security.Permission;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,9 +22,14 @@ public class Role {
     private Long id;
 
     @NotBlank(message = "Role name cannot be blank")
+    @Column(unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+
+    private String description;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
     @Builder.Default
-    private Set<User> users = new HashSet<>();
+    private Set<Permission> permissions = new HashSet<>();
 }
