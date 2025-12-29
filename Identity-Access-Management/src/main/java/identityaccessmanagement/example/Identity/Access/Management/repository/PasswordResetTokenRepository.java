@@ -2,7 +2,6 @@ package identityaccessmanagement.example.Identity.Access.Management.repository;
 
 import identityaccessmanagement.example.Identity.Access.Management.model.PasswordResetToken;
 import identityaccessmanagement.example.Identity.Access.Management.model.User;
-import org.hibernate.sql.ast.tree.expression.JdbcParameter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
