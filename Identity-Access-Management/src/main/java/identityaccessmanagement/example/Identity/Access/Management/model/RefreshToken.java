@@ -74,7 +74,7 @@ public class RefreshToken {
     public void rotate(RefreshToken newToken) {
         this.isRevoked = true;
         this.revokedAt = LocalDateTime.now();
-        this.revocationReason = "Token rotated";
+        this.revocationReason = "Token rotation";
         this.replaceBy = newToken;
     }
 
