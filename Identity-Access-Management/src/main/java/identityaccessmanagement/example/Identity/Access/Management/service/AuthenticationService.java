@@ -83,6 +83,7 @@ public class AuthenticationService {
                     )
             );
         } catch (Exception e) {
+            handleFailedLogin(user);
             throw new IllegalArgumentException("Invalid username/password supplied");
         }
 
