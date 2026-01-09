@@ -69,7 +69,7 @@ public class AuthenticationService {
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        saveRefreshToken(user, refreshToken, null, null);
+        saveRefreshToken(user, refreshToken, ipAddress, userAgent);
 
         return new AuthenticationResponseDto(accessToken, refreshToken, jwtService.getAccessTokenExpiration());
     }
@@ -103,7 +103,7 @@ public class AuthenticationService {
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        saveRefreshToken(user, refreshToken, null, null);
+        saveRefreshToken(user, refreshToken, ipAddress, userAgent);
 
         return new AuthenticationResponseDto(accessToken, refreshToken, jwtService.getAccessTokenExpiration());
     }
