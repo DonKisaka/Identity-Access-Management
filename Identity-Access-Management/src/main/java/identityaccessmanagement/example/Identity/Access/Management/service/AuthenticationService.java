@@ -42,7 +42,7 @@ public class AuthenticationService {
 
 
     @Transactional
-    public AuthenticationResponseDto signUp(CreateUserDto dto) {
+    public AuthenticationResponseDto signUp(CreateUserDto dto, String ipAddress, String userAgent) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new IllegalArgumentException("Email already exists!");
         }
@@ -75,7 +75,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public AuthenticationResponseDto authenticate(LoginUserDto dto) {
+    public AuthenticationResponseDto authenticate(LoginUserDto dto, String ipAddress, String userAgent) {
         User user = userRepository.findByUsernameWithRoles(dto.username())
                 .orElseThrow(() -> new IllegalArgumentException("Error: User not found."));
 
