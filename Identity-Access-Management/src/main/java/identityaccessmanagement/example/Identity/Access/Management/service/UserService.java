@@ -37,7 +37,7 @@ public class UserService {
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(userMapper::toResponse);
-    }kjk
+    }
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
