@@ -2,6 +2,8 @@ package identityaccessmanagement.example.Identity.Access.Management.service;
 
 import identityaccessmanagement.example.Identity.Access.Management.dto.RoleRequestDto;
 import identityaccessmanagement.example.Identity.Access.Management.dto.RoleResponseDto;
+import identityaccessmanagement.example.Identity.Access.Management.exception.DuplicateResourceException;
+import identityaccessmanagement.example.Identity.Access.Management.exception.ResourceNotFoundException;
 import identityaccessmanagement.example.Identity.Access.Management.mapper.RoleMapper;
 import identityaccessmanagement.example.Identity.Access.Management.model.Permission;
 import identityaccessmanagement.example.Identity.Access.Management.model.Role;
@@ -34,12 +36,14 @@ public class RoleService {
     }
 
     public RoleResponseDto getRoleById(Long id) {
-        return roleMapper.toResponse(roleRepository.findById(id).orElseThrow());
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
+        return roleMapper.toResponse(role);
     }
 
     public RoleResponseDto getRoleByName(String name) {
         Role role = roleRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found with name: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", name));
         return roleMapper.toResponse(role);
     }
 
@@ -47,14 +51,14 @@ public class RoleService {
     @PreAuthorize("hasRole('ADMIN')")
     public RoleResponseDto createRole(RoleRequestDto dto) {
         if (roleRepository.findByName(dto.name()).isPresent()) {
-            throw new IllegalArgumentException("Role already exists!");
+            throw new DuplicateResourceException("Role", "name", dto.name());
         }
 
         Set<Permission> permissions = new HashSet<>();
         if (dto.permissionIds() != null) {
             permissions = dto.permissionIds().stream()
                     .map(id -> permissionRepository.findById(id)
-                            .orElseThrow(() -> new IllegalArgumentException("Permission not found: " + id)))
+                            .orElseThrow(() -> new ResourceNotFoundException("Permission", "id", id)))
                     .collect(Collectors.toSet());
         }
 
@@ -71,10 +75,10 @@ public class RoleService {
     @PreAuthorize("hasRole('ADMIN')")
     public void addPermissionToRole(String roleName, Long permissionId) {
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found with name: " + roleName));
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", roleName));
 
         Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new IllegalArgumentException("Permission not found with id: " + permissionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Permission", "id", permissionId));
 
         role.getPermissions().add(permission);
         roleRepository.save(role);

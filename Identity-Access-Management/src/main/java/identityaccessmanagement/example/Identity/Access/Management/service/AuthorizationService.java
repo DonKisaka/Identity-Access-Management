@@ -1,5 +1,6 @@
 package identityaccessmanagement.example.Identity.Access.Management.service;
 
+import identityaccessmanagement.example.Identity.Access.Management.exception.ResourceNotFoundException;
 import identityaccessmanagement.example.Identity.Access.Management.model.Role;
 import identityaccessmanagement.example.Identity.Access.Management.model.User;
 import identityaccessmanagement.example.Identity.Access.Management.repository.RoleRepository;
@@ -26,9 +27,9 @@ public class AuthorizationService {
     @PreAuthorize("hasRole('ADMIN')")
     public void assignRoleToUser(Long userId, String roleName) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", roleName));
         user.getRoles().add(role);
         userRepository.save(user);
     }
@@ -37,16 +38,16 @@ public class AuthorizationService {
     @PreAuthorize("hasRole('ADMIN')")
     public void removeRoleFromUser(Long userId, String roleName) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", roleName));
         user.getRoles().remove(role);
         userRepository.save(user);
     }
 
     public Set<String> getUserRoles(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());

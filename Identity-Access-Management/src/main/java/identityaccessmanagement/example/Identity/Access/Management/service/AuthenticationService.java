@@ -4,6 +4,7 @@ import identityaccessmanagement.example.Identity.Access.Management.config.JwtSer
 import identityaccessmanagement.example.Identity.Access.Management.dto.AuthenticationResponseDto;
 import identityaccessmanagement.example.Identity.Access.Management.dto.CreateUserDto;
 import identityaccessmanagement.example.Identity.Access.Management.dto.LoginUserDto;
+import identityaccessmanagement.example.Identity.Access.Management.exception.*;
 import identityaccessmanagement.example.Identity.Access.Management.model.RefreshToken;
 import identityaccessmanagement.example.Identity.Access.Management.model.Role;
 import identityaccessmanagement.example.Identity.Access.Management.model.User;
@@ -44,15 +45,15 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResponseDto signUp(CreateUserDto dto, String ipAddress, String userAgent) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new IllegalArgumentException("Email already exists!");
+            throw new DuplicateResourceException("User", "email", dto.email());
         }
 
         if (userRepository.existsByUsername(dto.username())) {
-            throw new IllegalArgumentException("Username already exists!");
+            throw new DuplicateResourceException("User", "username", dto.username());
         }
 
         Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Error: User Role not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", "USER"));
 
         User user = User.builder()
                 .username(dto.username())
@@ -77,11 +78,14 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResponseDto authenticate(LoginUserDto dto, String ipAddress, String userAgent) {
         User user = userRepository.findByUsernameWithRoles(dto.username())
-                .orElseThrow(() -> new IllegalArgumentException("Error: User not found."));
-
+                .orElseThrow(() -> new BadCredentialsException());
 
         if (user.getIsLocked()) {
-            throw new IllegalStateException("Account is locked!");
+            throw new AccountLockedException();
+        }
+
+        if (!user.isEnabled()) {
+            throw new AccountDisabledException();
         }
 
         try {
@@ -93,7 +97,7 @@ public class AuthenticationService {
             );
         } catch (Exception e) {
             handleFailedLogin(user);
-            throw new IllegalArgumentException("Invalid username/password supplied");
+            throw new BadCredentialsException();
         }
 
         user.resetFailedAttempts();
@@ -112,23 +116,23 @@ public class AuthenticationService {
     public AuthenticationResponseDto refreshToken(String refreshToken, String ipAddress, String userAgent) {
         String username = jwtService.extractUsername(refreshToken);
         User user = userRepository.findByUsernameWithRoles(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         if(!jwtService.isTokenValid(refreshToken, user)) {
-            throw new IllegalArgumentException("Invalid refresh token");
+            throw new InvalidTokenException("Refresh token is invalid or expired");
         }
 
         String tokenHash = hashToken(refreshToken);
         RefreshToken storedToken = refreshTokenRepository.findByTokenHash(tokenHash)
-                .orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
+                .orElseThrow(() -> new InvalidTokenException("Refresh token not found"));
 
         if (storedToken.getReplaceBy() != null) {
             refreshTokenRepository.revokeAllUserTokens(user);
-            throw new SecurityException("Refresh token revoked due to replacement");
+            throw new TokenRevokedException("Refresh token reuse detected - all tokens revoked for security");
         }
 
         if (!storedToken.isValid()) {
-            throw new IllegalArgumentException("Refresh token expired or revoked");
+            throw new InvalidTokenException("Refresh token has expired or been revoked");
         }
 
         String newAccessToken = jwtService.generateToken(user);
@@ -167,7 +171,7 @@ public class AuthenticationService {
     @Transactional
     public void logoutAllDevices(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         refreshTokenRepository.revokeAllUserTokens(user);
     }

@@ -1,6 +1,7 @@
 package identityaccessmanagement.example.Identity.Access.Management.service;
 
 import identityaccessmanagement.example.Identity.Access.Management.dto.UserResponseDto;
+import identityaccessmanagement.example.Identity.Access.Management.exception.ResourceNotFoundException;
 import identityaccessmanagement.example.Identity.Access.Management.mapper.UserMapper;
 import identityaccessmanagement.example.Identity.Access.Management.model.User;
 import identityaccessmanagement.example.Identity.Access.Management.repository.UserRepository;
@@ -23,13 +24,13 @@ public class UserService {
 
     public UserResponseDto getUserByUsername(String username) {
         User user = userRepository.findByUsernameWithRoles(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         return userMapper.toResponse(user);
     }
 
     public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         return userMapper.toResponse(user);
     }
 
@@ -43,7 +44,7 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public void unlockUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.unlock();
         userRepository.save(user);
     }
@@ -52,7 +53,7 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public void disableUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.setEnabled(false);
         userRepository.save(user);
     }
@@ -61,7 +62,7 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public void enableUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.setEnabled(true);
         userRepository.save(user);
     }

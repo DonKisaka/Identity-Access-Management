@@ -2,6 +2,7 @@ package identityaccessmanagement.example.Identity.Access.Management.service;
 
 import identityaccessmanagement.example.Identity.Access.Management.dto.PermissionRequestDto;
 import identityaccessmanagement.example.Identity.Access.Management.dto.PermissionResponseDto;
+import identityaccessmanagement.example.Identity.Access.Management.exception.DuplicateResourceException;
 import identityaccessmanagement.example.Identity.Access.Management.mapper.PermissionMapper;
 import identityaccessmanagement.example.Identity.Access.Management.model.Permission;
 import identityaccessmanagement.example.Identity.Access.Management.repository.PermissionRepository;
@@ -30,7 +31,7 @@ public class PermissionService {
     @PreAuthorize("hasRole('ADMIN')")
     public PermissionResponseDto createPermission(PermissionRequestDto dto) {
         if (permissionRepository.findByName(dto.name()).isPresent()) {
-            throw new IllegalArgumentException("Permission already exists!");
+            throw new DuplicateResourceException("Permission", "name", dto.name());
         }
 
         Permission permission = Permission.builder()

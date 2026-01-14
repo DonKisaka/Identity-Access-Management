@@ -1,5 +1,8 @@
 package identityaccessmanagement.example.Identity.Access.Management.service;
 
+import identityaccessmanagement.example.Identity.Access.Management.exception.InvalidPasswordException;
+import identityaccessmanagement.example.Identity.Access.Management.exception.InvalidTokenException;
+import identityaccessmanagement.example.Identity.Access.Management.exception.ResourceNotFoundException;
 import identityaccessmanagement.example.Identity.Access.Management.model.PasswordResetToken;
 import identityaccessmanagement.example.Identity.Access.Management.model.User;
 import identityaccessmanagement.example.Identity.Access.Management.repository.PasswordResetTokenRepository;
@@ -30,7 +33,7 @@ public class PasswordService {
     @Transactional
     public String createPasswordResetToken(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("No user found with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
         passwordResetTokenRepository.invalidateAllUserTokens(user);
 
@@ -50,10 +53,10 @@ public class PasswordService {
     public void resetPassword(String token, String newPassword) {
         String tokenHash = hashToken(token);
         PasswordResetToken resetToken = passwordResetTokenRepository.findByTokenHash(tokenHash)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+                .orElseThrow(() -> new InvalidTokenException("Invalid password reset token"));
 
         if (!resetToken.isValid()) {
-            throw new IllegalArgumentException("Token expired");
+            throw new InvalidTokenException("Password reset token has expired");
         }
 
         User user = resetToken.getUser();
@@ -67,10 +70,10 @@ public class PasswordService {
     @Transactional
     public void changePassword(String username, String currentPassword,  String newPassword) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid current password");
+            throw new InvalidPasswordException("Current password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
