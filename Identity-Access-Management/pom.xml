@@ -98,7 +98,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- H2 Database for Unit Tests -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
