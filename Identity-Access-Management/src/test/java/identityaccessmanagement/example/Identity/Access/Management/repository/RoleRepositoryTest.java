@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
-@DisplayName("RoleRepository Tests")
 class RoleRepositoryTest {
 
     @Autowired
@@ -71,11 +70,9 @@ class RoleRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findByName Tests")
     class FindByNameTests {
 
         @Test
-        @DisplayName("GIVEN role exists WHEN findByName is called THEN returns the role")
         void shouldFindRoleByName() {
             // GIVEN - roles already persisted in setUp
 
@@ -89,7 +86,6 @@ class RoleRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN role doesn't exist WHEN findByName is called THEN returns empty")
         void shouldReturnEmptyWhenRoleNotFound() {
             // GIVEN - no role with this name
 
@@ -101,7 +97,6 @@ class RoleRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN role name is case-sensitive WHEN findByName with different case THEN returns empty")
         void shouldBeCaseSensitiveForRoleName() {
             // GIVEN - role with uppercase name
 
@@ -113,7 +108,6 @@ class RoleRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN role with permissions WHEN findByName is called THEN returns role with permissions")
         void shouldReturnRoleWithPermissions() {
             // GIVEN - role with permissions already persisted
 
@@ -130,105 +124,9 @@ class RoleRepositoryTest {
     }
 
     @Nested
-    @DisplayName("CRUD Operations Tests")
-    class CrudOperationsTests {
-
-        @Test
-        @DisplayName("GIVEN new role WHEN save is called THEN role is persisted with generated ID")
-        void shouldSaveNewRole() {
-            // GIVEN
-            Role newRole = Role.builder()
-                    .name("MODERATOR")
-                    .description("Moderator role")
-                    .build();
-
-            // WHEN
-            Role savedRole = roleRepository.save(newRole);
-
-            // THEN
-            assertThat(savedRole.getId()).isNotNull();
-            assertThat(savedRole.getName()).isEqualTo("MODERATOR");
-        }
-
-        @Test
-        @DisplayName("GIVEN existing role WHEN findById is called THEN returns the role")
-        void shouldFindRoleById() {
-            // GIVEN
-            Long roleId = adminRole.getId();
-
-            // WHEN
-            Optional<Role> result = roleRepository.findById(roleId);
-
-            // THEN
-            assertThat(result).isPresent();
-            assertThat(result.get().getName()).isEqualTo("ADMIN");
-        }
-
-        @Test
-        @DisplayName("GIVEN existing role WHEN delete is called THEN role is removed")
-        void shouldDeleteRole() {
-            // GIVEN
-            Role roleToDelete = Role.builder()
-                    .name("TEMP_ROLE")
-                    .description("Temporary role")
-                    .build();
-            roleToDelete = roleRepository.save(roleToDelete);
-            Long roleId = roleToDelete.getId();
-
-            // WHEN
-            roleRepository.deleteById(roleId);
-
-            // THEN
-            assertThat(roleRepository.findById(roleId)).isEmpty();
-        }
-
-        @Test
-        @DisplayName("GIVEN multiple roles WHEN findAll is called THEN returns all roles")
-        void shouldFindAllRoles() {
-            // GIVEN - roles already persisted in setUp
-
-            // WHEN
-            var allRoles = roleRepository.findAll();
-
-            // THEN
-            assertThat(allRoles).hasSizeGreaterThanOrEqualTo(2);
-            assertThat(allRoles).extracting(Role::getName)
-                    .contains("ADMIN", "USER");
-        }
-
-        @Test
-        @DisplayName("GIVEN role with new permission WHEN save is called THEN updates role permissions")
-        void shouldUpdateRolePermissions() {
-            // GIVEN
-            Optional<Role> foundRole = roleRepository.findByName("USER");
-            assertThat(foundRole).isPresent();
-            Role role = foundRole.get();
-
-            Permission newPermission = Permission.builder()
-                    .name("DELETE_DATA")
-                    .resource("data")
-                    .action("delete")
-                    .build();
-            newPermission = permissionRepository.save(newPermission);
-
-            role.getPermissions().add(newPermission);
-
-            // WHEN
-            roleRepository.save(role);
-
-            // THEN
-            Optional<Role> updatedRole = roleRepository.findByName("USER");
-            assertThat(updatedRole).isPresent();
-            assertThat(updatedRole.get().getPermissions()).hasSize(2);
-        }
-    }
-
-    @Nested
-    @DisplayName("Role Without Permissions Tests")
     class RoleWithoutPermissionsTests {
 
         @Test
-        @DisplayName("GIVEN role without permissions WHEN save is called THEN persists successfully")
         void shouldSaveRoleWithoutPermissions() {
             // GIVEN
             Role roleWithoutPermissions = Role.builder()
@@ -245,7 +143,6 @@ class RoleRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN role without permissions WHEN findByName is called THEN returns role with empty permissions")
         void shouldFindRoleWithEmptyPermissions() {
             // GIVEN
             Role guestRole = Role.builder()

@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
-@DisplayName("PasswordResetTokenRepository Tests")
 class PasswordResetTokenRepositoryTest {
 
     @Autowired
@@ -82,11 +81,9 @@ class PasswordResetTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findByTokenHash Tests")
     class FindByTokenHashTests {
 
         @Test
-        @DisplayName("GIVEN token exists WHEN findByTokenHash is called THEN returns the token")
         void shouldFindTokenByHash() {
             // GIVEN - token already persisted in setUp
 
@@ -100,7 +97,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN token doesn't exist WHEN findByTokenHash is called THEN returns empty")
         void shouldReturnEmptyWhenTokenNotFound() {
             // GIVEN - no token with this hash
 
@@ -112,7 +108,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN expired token WHEN findByTokenHash is called THEN returns the token")
         void shouldFindExpiredToken() {
             // GIVEN - expired token already persisted
 
@@ -125,7 +120,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN used token WHEN findByTokenHash is called THEN returns the token")
         void shouldFindUsedToken() {
             // GIVEN - used token already persisted
 
@@ -139,11 +133,9 @@ class PasswordResetTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findByUserAndIsUsedFalseAndExpiresAtAfter Tests")
     class FindValidTokensForUserTests {
 
         @Test
-        @DisplayName("GIVEN user has valid tokens WHEN findByUserAndIsUsedFalseAndExpiresAtAfter is called THEN returns valid tokens")
         void shouldFindValidTokensForUser() {
             // GIVEN
             LocalDateTime now = LocalDateTime.now();
@@ -158,7 +150,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN user has no valid tokens WHEN findByUserAndIsUsedFalseAndExpiresAtAfter is called THEN returns empty list")
         void shouldReturnEmptyWhenNoValidTokens() {
             // GIVEN - create user with only expired/used tokens
             User anotherUser = User.builder()
@@ -180,7 +171,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN multiple valid tokens WHEN findByUserAndIsUsedFalseAndExpiresAtAfter is called THEN returns all valid tokens")
         void shouldFindMultipleValidTokens() {
             // GIVEN - create another valid token
             PasswordResetToken anotherValidToken = PasswordResetToken.builder()
@@ -201,11 +191,9 @@ class PasswordResetTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("invalidateAllUserTokens Tests")
     class InvalidateAllUserTokensTests {
 
         @Test
-        @DisplayName("GIVEN user has unused tokens WHEN invalidateAllUserTokens is called THEN all tokens are marked as used")
         void shouldInvalidateAllUserTokens() {
             // GIVEN - tokens already persisted
 
@@ -227,7 +215,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN user has no unused tokens WHEN invalidateAllUserTokens is called THEN completes without error")
         void shouldHandleNoUnusedTokens() {
             // GIVEN - create user with only used tokens
             User userWithUsedTokens = User.builder()
@@ -257,11 +244,9 @@ class PasswordResetTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("deleteByExpiresAtBefore Tests")
     class DeleteByExpiresAtBeforeTests {
 
         @Test
-        @DisplayName("GIVEN expired tokens exist WHEN deleteByExpiresAtBefore is called THEN expired tokens are deleted")
         void shouldDeleteExpiredTokens() {
             // GIVEN
             LocalDateTime cutoffDate = LocalDateTime.now();
@@ -278,7 +263,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN all tokens are valid WHEN deleteByExpiresAtBefore with past date THEN no tokens are deleted")
         void shouldNotDeleteValidTokens() {
             // GIVEN
             LocalDateTime pastCutoff = LocalDateTime.now().minusYears(1);
@@ -294,11 +278,9 @@ class PasswordResetTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("Token Lifecycle Tests")
     class TokenLifecycleTests {
 
         @Test
-        @DisplayName("GIVEN valid token WHEN markAsUsed is called THEN token becomes invalid")
         void shouldMarkTokenAsUsed() {
             // GIVEN
             Optional<PasswordResetToken> tokenOpt = passwordResetTokenRepository.findByTokenHash("validTokenHash123");
@@ -319,7 +301,6 @@ class PasswordResetTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN new token WHEN save is called THEN createdAt is set automatically")
         void shouldSetCreatedAtOnPersist() {
             // GIVEN
             PasswordResetToken newToken = PasswordResetToken.builder()

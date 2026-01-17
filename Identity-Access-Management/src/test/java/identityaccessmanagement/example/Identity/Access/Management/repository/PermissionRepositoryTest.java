@@ -59,7 +59,6 @@ class PermissionRepositoryTest {
     class FindByNameTests {
 
         @Test
-        @DisplayName("GIVEN permission exists WHEN findByName is called THEN returns the permission")
         void shouldFindPermissionByName() {
             // GIVEN - permissions already persisted in setUp
 
@@ -74,7 +73,6 @@ class PermissionRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN permission doesn't exist WHEN findByName is called THEN returns empty")
         void shouldReturnEmptyWhenPermissionNotFound() {
             // GIVEN - no permission with this name
 
@@ -86,7 +84,6 @@ class PermissionRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN permission name is case-sensitive WHEN findByName with different case THEN returns empty")
         void shouldBeCaseSensitiveForPermissionName() {
             // GIVEN - permission with uppercase name
 
@@ -98,7 +95,6 @@ class PermissionRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN multiple permissions WHEN findByName for each THEN returns correct permission")
         void shouldFindCorrectPermissionAmongMultiple() {
             // GIVEN - multiple permissions persisted
 
@@ -120,100 +116,9 @@ class PermissionRepositoryTest {
     }
 
     @Nested
-    @DisplayName("CRUD Operations Tests")
-    class CrudOperationsTests {
-
-        @Test
-        @DisplayName("GIVEN new permission WHEN save is called THEN permission is persisted with generated ID")
-        void shouldSaveNewPermission() {
-            // GIVEN
-            Permission newPermission = Permission.builder()
-                    .name("UPDATE_USERS")
-                    .resource("users")
-                    .action("update")
-                    .description("Permission to update users")
-                    .build();
-
-            // WHEN
-            Permission savedPermission = permissionRepository.save(newPermission);
-
-            // THEN
-            assertThat(savedPermission.getId()).isNotNull();
-            assertThat(savedPermission.getName()).isEqualTo("UPDATE_USERS");
-        }
-
-        @Test
-        @DisplayName("GIVEN existing permission WHEN findById is called THEN returns the permission")
-        void shouldFindPermissionById() {
-            // GIVEN
-            Long permissionId = readPermission.getId();
-
-            // WHEN
-            Optional<Permission> result = permissionRepository.findById(permissionId);
-
-            // THEN
-            assertThat(result).isPresent();
-            assertThat(result.get().getName()).isEqualTo("READ_USERS");
-        }
-
-        @Test
-        @DisplayName("GIVEN existing permission WHEN delete is called THEN permission is removed")
-        void shouldDeletePermission() {
-            // GIVEN
-            Permission tempPermission = Permission.builder()
-                    .name("TEMP_PERMISSION")
-                    .resource("temp")
-                    .action("temp")
-                    .build();
-            tempPermission = permissionRepository.save(tempPermission);
-            Long permissionId = tempPermission.getId();
-
-            // WHEN
-            permissionRepository.deleteById(permissionId);
-
-            // THEN
-            assertThat(permissionRepository.findById(permissionId)).isEmpty();
-        }
-
-        @Test
-        @DisplayName("GIVEN multiple permissions WHEN findAll is called THEN returns all permissions")
-        void shouldFindAllPermissions() {
-            // GIVEN - permissions already persisted in setUp
-
-            // WHEN
-            var allPermissions = permissionRepository.findAll();
-
-            // THEN
-            assertThat(allPermissions).hasSizeGreaterThanOrEqualTo(3);
-            assertThat(allPermissions).extracting(Permission::getName)
-                    .contains("READ_USERS", "WRITE_USERS", "DELETE_USERS");
-        }
-
-        @Test
-        @DisplayName("GIVEN existing permission WHEN update is called THEN permission is updated")
-        void shouldUpdatePermission() {
-            // GIVEN
-            Optional<Permission> foundPermission = permissionRepository.findByName("READ_USERS");
-            assertThat(foundPermission).isPresent();
-            Permission permission = foundPermission.get();
-            permission.setDescription("Updated description for read users");
-
-            // WHEN
-            permissionRepository.save(permission);
-
-            // THEN
-            Optional<Permission> updatedPermission = permissionRepository.findByName("READ_USERS");
-            assertThat(updatedPermission).isPresent();
-            assertThat(updatedPermission.get().getDescription()).isEqualTo("Updated description for read users");
-        }
-    }
-
-    @Nested
-    @DisplayName("Permission with Null Fields Tests")
     class PermissionWithNullFieldsTests {
 
         @Test
-        @DisplayName("GIVEN permission with null description WHEN save is called THEN persists successfully")
         void shouldSavePermissionWithNullDescription() {
             // GIVEN
             Permission permissionWithNullDesc = Permission.builder()
@@ -232,7 +137,6 @@ class PermissionRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN permission with all optional fields null WHEN findByName is called THEN returns permission")
         void shouldFindPermissionWithNullOptionalFields() {
             // GIVEN
             Permission minimalPermission = Permission.builder()

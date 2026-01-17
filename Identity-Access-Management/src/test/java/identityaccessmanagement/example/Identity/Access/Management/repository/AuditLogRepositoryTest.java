@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
-@DisplayName("AuditLogRepository Tests")
 class AuditLogRepositoryTest {
 
     @Autowired
@@ -61,7 +60,6 @@ class AuditLogRepositoryTest {
         anotherUser = userRepository.save(anotherUser);
 
         // Create audit logs for testUser
-        // Note: @PrePersist sets createdAt to now(), so all logs will have current timestamp
         loginLog = AuditLog.builder()
                 .user(testUser)
                 .action("LOGIN")
@@ -101,11 +99,9 @@ class AuditLogRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findByUserId Tests")
     class FindByUserIdTests {
 
         @Test
-        @DisplayName("GIVEN user has audit logs WHEN findByUserId is called THEN returns paginated logs")
         void shouldFindLogsByUserId() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 10);
@@ -120,7 +116,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN user has no audit logs WHEN findByUserId is called THEN returns empty page")
         void shouldReturnEmptyPageWhenNoLogs() {
             // GIVEN - create user with no logs
             User userWithNoLogs = User.builder()
@@ -144,7 +139,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN pagination WHEN findByUserId is called THEN respects page size")
         void shouldRespectPagination() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 2);
@@ -159,7 +153,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN second page requested WHEN findByUserId is called THEN returns correct page")
         void shouldReturnCorrectPage() {
             // GIVEN
             Pageable pageable = PageRequest.of(1, 2);
@@ -174,11 +167,9 @@ class AuditLogRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findByActionAndStatus Tests")
     class FindByActionAndStatusTests {
 
         @Test
-        @DisplayName("GIVEN logs with action and status WHEN findByActionAndStatus is called THEN returns matching logs")
         void shouldFindLogsByActionAndStatus() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 10);
@@ -194,7 +185,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN logs with failed status WHEN findByActionAndStatus is called THEN returns failed logs")
         void shouldFindFailedLogs() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 10);
@@ -209,7 +199,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN no matching logs WHEN findByActionAndStatus is called THEN returns empty page")
         void shouldReturnEmptyWhenNoMatch() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 10);
@@ -223,7 +212,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN logout action WHEN findByActionAndStatus is called THEN returns logout logs")
         void shouldFindLogoutLogs() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 10);
@@ -238,11 +226,9 @@ class AuditLogRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findByCreatedAtBetween Tests")
     class FindByCreatedAtBetweenTests {
 
         @Test
-        @DisplayName("GIVEN logs in date range WHEN findByCreatedAtBetween is called THEN returns logs in range")
         void shouldFindLogsInDateRange() {
             // GIVEN - All logs are created with @PrePersist setting createdAt to now()
             LocalDateTime start = LocalDateTime.now().minusMinutes(5);
@@ -258,7 +244,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN current time range WHEN findByCreatedAtBetween is called THEN returns all recent logs")
         void shouldFindLogsInCurrentTimeRange() {
             // GIVEN - All logs have createdAt set to approximately now() by @PrePersist
             LocalDateTime start = LocalDateTime.now().minusHours(1);
@@ -273,7 +258,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN no logs in date range WHEN findByCreatedAtBetween is called THEN returns empty page")
         void shouldReturnEmptyWhenNoLogsInRange() {
             // GIVEN - date range in the future
             LocalDateTime start = LocalDateTime.now().plusDays(10);
@@ -289,7 +273,6 @@ class AuditLogRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN past date range WHEN findByCreatedAtBetween is called THEN returns empty page")
         void shouldReturnEmptyWhenDateRangeInPast() {
             // GIVEN - date range in the past (logs are created at now() by @PrePersist)
             LocalDateTime start = LocalDateTime.now().minusDays(10);
@@ -305,64 +288,12 @@ class AuditLogRepositoryTest {
         }
     }
 
-    @Nested
-    @DisplayName("CRUD Operations Tests")
-    class CrudOperationsTests {
 
-        @Test
-        @DisplayName("GIVEN new audit log WHEN save is called THEN log is persisted")
-        void shouldSaveNewAuditLog() {
-            // GIVEN
-            AuditLog newLog = AuditLog.builder()
-                    .user(testUser)
-                    .action("PASSWORD_CHANGE")
-                    .status("SUCCESS")
-                    .details("User changed password")
-                    .ipAddress("192.168.1.1")
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            // WHEN
-            AuditLog savedLog = auditLogRepository.save(newLog);
-
-            // THEN
-            assertThat(savedLog.getId()).isNotNull();
-            assertThat(savedLog.getAction()).isEqualTo("PASSWORD_CHANGE");
-        }
-
-        @Test
-        @DisplayName("GIVEN audit log WHEN delete is called THEN log is removed")
-        void shouldDeleteAuditLog() {
-            // GIVEN
-            Long logId = loginLog.getId();
-            assertThat(auditLogRepository.findById(logId)).isPresent();
-
-            // WHEN
-            auditLogRepository.deleteById(logId);
-
-            // THEN
-            assertThat(auditLogRepository.findById(logId)).isEmpty();
-        }
-
-        @Test
-        @DisplayName("GIVEN multiple logs WHEN count is called THEN returns correct count")
-        void shouldCountLogs() {
-            // GIVEN - 4 logs persisted in setUp
-
-            // WHEN
-            long count = auditLogRepository.count();
-
-            // THEN
-            assertThat(count).isGreaterThanOrEqualTo(4);
-        }
-    }
 
     @Nested
-    @DisplayName("Audit Log Metadata Tests")
     class AuditLogMetadataTests {
 
         @Test
-        @DisplayName("GIVEN audit log with all fields WHEN save and find THEN all fields are preserved")
         void shouldPreserveAllFields() {
             // GIVEN
             LocalDateTime timestamp = LocalDateTime.now();

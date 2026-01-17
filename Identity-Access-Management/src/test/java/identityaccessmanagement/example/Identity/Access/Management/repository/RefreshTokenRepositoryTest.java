@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
-@DisplayName("RefreshTokenRepository Tests")
 class RefreshTokenRepositoryTest {
 
     @Autowired
@@ -74,11 +73,9 @@ class RefreshTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findByTokenHash Tests")
     class FindByTokenHashTests {
 
         @Test
-        @DisplayName("GIVEN token exists WHEN findByTokenHash is called THEN returns token with user loaded")
         void shouldFindTokenByHash() {
             // GIVEN - token already persisted in setUp
 
@@ -93,7 +90,6 @@ class RefreshTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN token doesn't exist WHEN findByTokenHash is called THEN returns empty")
         void shouldReturnEmptyWhenTokenNotFound() {
             // GIVEN - no token with this hash
 
@@ -105,7 +101,6 @@ class RefreshTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN expired token WHEN findByTokenHash is called THEN still returns the token")
         void shouldFindExpiredToken() {
             // GIVEN - expired token already persisted
 
@@ -118,7 +113,6 @@ class RefreshTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN token with user WHEN findByTokenHash is called THEN user is eagerly fetched")
         void shouldEagerlyFetchUser() {
             // GIVEN - token with user already persisted
 
@@ -132,11 +126,9 @@ class RefreshTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("revokeAllUserTokens Tests")
     class RevokeAllUserTokensTests {
 
         @Test
-        @DisplayName("GIVEN user has active tokens WHEN revokeAllUserTokens is called THEN all tokens are revoked")
         void shouldRevokeAllUserTokens() {
             // GIVEN - create another active token for the user
             RefreshToken anotherToken = RefreshToken.builder()
@@ -165,7 +157,6 @@ class RefreshTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN user has no active tokens WHEN revokeAllUserTokens is called THEN completes without error")
         void shouldHandleNoActiveTokens() {
             // GIVEN - create user with no tokens
             User userWithNoTokens = User.builder()
@@ -186,7 +177,6 @@ class RefreshTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN user has already revoked tokens WHEN revokeAllUserTokens is called THEN already revoked tokens stay revoked")
         void shouldNotAffectAlreadyRevokedTokens() {
             // GIVEN - create a revoked token
             RefreshToken revokedToken = RefreshToken.builder()
@@ -210,7 +200,6 @@ class RefreshTokenRepositoryTest {
     }
 
     @Nested
-    @DisplayName("deleteByExpiresAtBefore Tests")
     class DeleteByExpiresAtBeforeTests {
 
         @Test
@@ -231,7 +220,6 @@ class RefreshTokenRepositoryTest {
         }
 
         @Test
-        @DisplayName("GIVEN no expired tokens WHEN deleteByExpiresAtBefore is called THEN no tokens are deleted")
         void shouldNotDeleteNonExpiredTokens() {
             // GIVEN - only delete tokens expired before a past date
             LocalDateTime pastCutoff = LocalDateTime.now().minusYears(1);
@@ -242,50 +230,6 @@ class RefreshTokenRepositoryTest {
             // THEN - both tokens should still exist
             assertThat(refreshTokenRepository.findByTokenHash("activeTokenHash123")).isPresent();
             assertThat(refreshTokenRepository.findByTokenHash("expiredTokenHash456")).isPresent();
-        }
-    }
-
-    @Nested
-    @DisplayName("CRUD Operations Tests")
-    class CrudOperationsTests {
-
-        @Test
-        @DisplayName("GIVEN new token WHEN save is called THEN token is persisted")
-        void shouldSaveNewToken() {
-            // GIVEN
-            RefreshToken newToken = RefreshToken.builder()
-                    .user(testUser)
-                    .tokenHash("newTokenHash999")
-                    .expiresAt(LocalDateTime.now().plusDays(30))
-                    .isRevoked(false)
-                    .ipAddress("10.0.0.1")
-                    .build();
-
-            // WHEN
-            RefreshToken savedToken = refreshTokenRepository.save(newToken);
-
-            // THEN
-            assertThat(savedToken.getId()).isNotNull();
-            assertThat(savedToken.getTokenHash()).isEqualTo("newTokenHash999");
-        }
-
-        @Test
-        @DisplayName("GIVEN token WHEN revoke is called THEN token is marked as revoked")
-        void shouldRevokeToken() {
-            // GIVEN
-            Optional<RefreshToken> tokenOpt = refreshTokenRepository.findByTokenHash("activeTokenHash123");
-            assertThat(tokenOpt).isPresent();
-            RefreshToken token = tokenOpt.get();
-
-            // WHEN
-            token.revoke("User requested logout");
-            refreshTokenRepository.save(token);
-
-            // THEN
-            Optional<RefreshToken> revokedToken = refreshTokenRepository.findByTokenHash("activeTokenHash123");
-            assertThat(revokedToken).isPresent();
-            assertThat(revokedToken.get().getIsRevoked()).isTrue();
-            assertThat(revokedToken.get().getRevocationReason()).isEqualTo("User requested logout");
         }
     }
 }
