@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/audit-logs")
-@PreAuthorize("hasRole('ADMIN')")
 public class AuditLogController {
 
     private final AuditLogService auditLogService;
@@ -23,6 +22,7 @@ public class AuditLogController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAuthority('audit:read')")
     public ResponseEntity<Page<AuditLogResponseDto>> getLogsByUser(
             @PathVariable Long userId,
             Pageable pageable
@@ -31,6 +31,7 @@ public class AuditLogController {
     }
 
     @GetMapping("/date-range")
+    @PreAuthorize("hasAuthority('audit:read')")
     public ResponseEntity<Page<AuditLogResponseDto>> getLogsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,

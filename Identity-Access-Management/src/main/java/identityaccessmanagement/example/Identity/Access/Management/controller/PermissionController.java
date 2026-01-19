@@ -6,6 +6,7 @@ import identityaccessmanagement.example.Identity.Access.Management.service.Permi
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +22,14 @@ public class PermissionController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('permissions:read')")
     public ResponseEntity<List<PermissionResponseDto>> getAllPermissions() {
         return ResponseEntity.ok(permissionService.getAllPermissions());
     }
 
     @PostMapping()
-    public ResponseEntity<PermissionResponseDto> createPermission(@Valid  @RequestBody PermissionRequestDto dto) {
+    @PreAuthorize("hasAuthority('permissions:create')")
+    public ResponseEntity<PermissionResponseDto> createPermission(@Valid @RequestBody PermissionRequestDto dto) {
         PermissionResponseDto permissionResponseDto = permissionService.createPermission(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(permissionResponseDto);
     }

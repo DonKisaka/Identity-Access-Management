@@ -6,6 +6,7 @@ import identityaccessmanagement.example.Identity.Access.Management.dto.ResetPass
 import identityaccessmanagement.example.Identity.Access.Management.service.PasswordService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,7 @@ public class PasswordController {
     }
 
     @PostMapping("/change")
+    @PreAuthorize("hasAuthority('profile:password')")
     public ResponseEntity<Void> changePassword(
             Authentication authentication,
             @Valid @RequestBody ChangePasswordRequestDto dto) {

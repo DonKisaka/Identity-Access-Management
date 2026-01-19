@@ -5,6 +5,7 @@ import identityaccessmanagement.example.Identity.Access.Management.service.UserS
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAuthority('profile:read')")
     public ResponseEntity<UserResponseDto> getCurrentUser(
             Authentication authentication
     ) {
@@ -27,29 +29,34 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<UserResponseDto> getUserByUsername(@PathVariable String username) {
         UserResponseDto user = userService.getUserByUsername(username);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
         return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
 
     @PostMapping("/{userId}/unlock")
+    @PreAuthorize("hasAuthority('users:manage')")
     public ResponseEntity<Void> unlockUser(@PathVariable Long userId) {
         userService.unlockUser(userId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{userId}/disable")
+    @PreAuthorize("hasAuthority('users:manage')")
     public ResponseEntity<Void> disableUser(@PathVariable Long userId) {
         userService.disableUser(userId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{userId}/enable")
+    @PreAuthorize("hasAuthority('users:manage')")
     public ResponseEntity<Void> enableUser(@PathVariable Long userId) {
         userService.enableUser(userId);
         return ResponseEntity.ok().build();
