@@ -28,7 +28,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AuthorizationService Tests")
 class AuthorizationServiceTest {
 
     @Mock
@@ -83,11 +82,9 @@ class AuthorizationServiceTest {
     }
 
     @Nested
-    @DisplayName("assignRoleToUser Tests")
     class AssignRoleToUserTests {
 
         @Test
-        @DisplayName("GIVEN valid user and role WHEN assignRoleToUser is called THEN adds role to user")
         void shouldAssignRoleToUserSuccessfully() {
             // GIVEN
             Long userId = 1L;
@@ -110,7 +107,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN user already has role WHEN assignRoleToUser is called THEN role set remains unchanged")
         void shouldNotDuplicateExistingRole() {
             // GIVEN
             Long userId = 1L;
@@ -132,7 +128,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent user WHEN assignRoleToUser is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFound() {
             // GIVEN
             Long nonExistentUserId = 999L;
@@ -150,7 +145,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent role WHEN assignRoleToUser is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenRoleNotFound() {
             // GIVEN
             Long userId = 1L;
@@ -169,7 +163,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN multiple role assignments WHEN assignRoleToUser is called THEN user accumulates roles")
         void shouldAccumulateMultipleRoles() {
             // GIVEN
             Long userId = 1L;
@@ -198,11 +191,9 @@ class AuthorizationServiceTest {
     }
 
     @Nested
-    @DisplayName("removeRoleFromUser Tests")
     class RemoveRoleFromUserTests {
 
         @Test
-        @DisplayName("GIVEN user has role WHEN removeRoleFromUser is called THEN removes role from user")
         void shouldRemoveRoleFromUserSuccessfully() {
             // GIVEN
             User userWithMultipleRoles = User.builder()
@@ -231,7 +222,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN user doesn't have role WHEN removeRoleFromUser is called THEN completes without error")
         void shouldCompleteWithoutErrorWhenUserDoesntHaveRole() {
             // GIVEN
             Long userId = 1L;
@@ -253,7 +243,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent user WHEN removeRoleFromUser is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFoundForRemove() {
             // GIVEN
             Long nonExistentUserId = 999L;
@@ -269,7 +258,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent role WHEN removeRoleFromUser is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenRoleNotFoundForRemove() {
             // GIVEN
             Long userId = 1L;
@@ -288,11 +276,9 @@ class AuthorizationServiceTest {
     }
 
     @Nested
-    @DisplayName("getUserRoles Tests")
     class GetUserRolesTests {
 
         @Test
-        @DisplayName("GIVEN user with roles WHEN getUserRoles is called THEN returns set of role names")
         void shouldReturnUserRoles() {
             // GIVEN
             User userWithMultipleRoles = User.builder()
@@ -316,7 +302,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN user with single role WHEN getUserRoles is called THEN returns set with one role")
         void shouldReturnSingleRole() {
             // GIVEN
             Long userId = 1L;
@@ -331,7 +316,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN user with no roles WHEN getUserRoles is called THEN returns empty set")
         void shouldReturnEmptySetWhenNoRoles() {
             // GIVEN
             User userWithNoRoles = User.builder()
@@ -351,7 +335,6 @@ class AuthorizationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent user WHEN getUserRoles is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFoundForGetRoles() {
             // GIVEN
             Long nonExistentUserId = 999L;

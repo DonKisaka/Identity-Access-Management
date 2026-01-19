@@ -31,7 +31,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AuditLogService Tests")
 class AuditLogServiceTest {
 
     @Mock
@@ -80,11 +79,9 @@ class AuditLogServiceTest {
     }
 
     @Nested
-    @DisplayName("logEvent Tests")
     class LogEventTests {
 
         @Test
-        @DisplayName("GIVEN valid event data WHEN logEvent is called THEN saves audit log")
         void shouldLogEventSuccessfully() {
             // GIVEN
             String action = "LOGIN";
@@ -114,7 +111,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN failed action WHEN logEvent is called THEN saves failure audit log")
         void shouldLogFailedEvent() {
             // GIVEN
             String action = "LOGIN";
@@ -136,7 +132,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN different actions WHEN logEvent is called THEN logs each action correctly")
         void shouldLogDifferentActions() {
             // GIVEN
             given(auditLogRepository.save(any(AuditLog.class))).willAnswer(invocation -> invocation.getArgument(0));
@@ -156,7 +151,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN null details WHEN logEvent is called THEN saves log with null details")
         void shouldHandleNullDetails() {
             // GIVEN
             given(auditLogRepository.save(any(AuditLog.class))).willAnswer(invocation -> invocation.getArgument(0));
@@ -172,7 +166,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN event data WHEN logEvent is called THEN sets createdAt timestamp")
         void shouldSetCreatedAtTimestamp() {
             // GIVEN
             LocalDateTime beforeCall = LocalDateTime.now();
@@ -191,11 +184,9 @@ class AuditLogServiceTest {
     }
 
     @Nested
-    @DisplayName("getLogsByUser Tests")
     class GetLogsByUserTests {
 
         @Test
-        @DisplayName("GIVEN user has audit logs WHEN getLogsByUser is called THEN returns paginated logs")
         void shouldReturnUserAuditLogs() {
             // GIVEN
             Long userId = 1L;
@@ -242,7 +233,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN user has no audit logs WHEN getLogsByUser is called THEN returns empty page")
         void shouldReturnEmptyPageWhenNoLogs() {
             // GIVEN
             Long userId = 1L;
@@ -263,7 +253,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN paginated request WHEN getLogsByUser is called THEN respects pagination")
         void shouldRespectPagination() {
             // GIVEN
             Long userId = 1L;
@@ -284,11 +273,9 @@ class AuditLogServiceTest {
     }
 
     @Nested
-    @DisplayName("getLogsByDateRange Tests")
     class GetLogsByDateRangeTests {
 
         @Test
-        @DisplayName("GIVEN date range with logs WHEN getLogsByDateRange is called THEN returns logs within range")
         void shouldReturnLogsWithinDateRange() {
             // GIVEN
             LocalDateTime start = LocalDateTime.now().minusDays(7);
@@ -332,7 +319,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN date range with no logs WHEN getLogsByDateRange is called THEN returns empty page")
         void shouldReturnEmptyPageWhenNoLogsInRange() {
             // GIVEN
             LocalDateTime start = LocalDateTime.now().minusYears(10);
@@ -352,7 +338,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN same start and end date WHEN getLogsByDateRange is called THEN searches that specific day")
         void shouldSearchSingleDay() {
             // GIVEN
             LocalDateTime singleDay = LocalDateTime.of(2024, 1, 15, 0, 0);
@@ -369,7 +354,6 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN large date range WHEN getLogsByDateRange is called THEN correctly paginates results")
         void shouldPaginateLargeDateRange() {
             // GIVEN
             LocalDateTime start = LocalDateTime.now().minusYears(1);

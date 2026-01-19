@@ -38,7 +38,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AuthenticationService Tests")
 class AuthenticationServiceTest {
 
     @Mock
@@ -101,11 +100,9 @@ class AuthenticationServiceTest {
     }
 
     @Nested
-    @DisplayName("signUp Tests")
     class SignUpTests {
 
         @Test
-        @DisplayName("GIVEN valid user data WHEN signUp is called THEN creates user and returns tokens")
         void shouldSignUpSuccessfully() {
             // GIVEN
             CreateUserDto createUserDto = new CreateUserDto("newuser", "newuser@example.com", "password123");
@@ -151,7 +148,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN duplicate email WHEN signUp is called THEN throws DuplicateResourceException")
         void shouldThrowExceptionWhenEmailExists() {
             // GIVEN
             CreateUserDto createUserDto = new CreateUserDto("newuser", "existing@example.com", "password123");
@@ -169,7 +165,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN duplicate username WHEN signUp is called THEN throws DuplicateResourceException")
         void shouldThrowExceptionWhenUsernameExists() {
             // GIVEN
             CreateUserDto createUserDto = new CreateUserDto("existinguser", "new@example.com", "password123");
@@ -186,7 +181,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN USER role doesn't exist WHEN signUp is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserRoleNotFound() {
             // GIVEN
             CreateUserDto createUserDto = new CreateUserDto("newuser", "new@example.com", "password123");
@@ -204,11 +198,9 @@ class AuthenticationServiceTest {
     }
 
     @Nested
-    @DisplayName("authenticate Tests")
     class AuthenticateTests {
 
         @Test
-        @DisplayName("GIVEN valid credentials WHEN authenticate is called THEN returns tokens")
         void shouldAuthenticateSuccessfully() {
             // GIVEN
             LoginUserDto loginDto = new LoginUserDto("testuser", "password123");
@@ -244,7 +236,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent user WHEN authenticate is called THEN throws BadCredentialsException")
         void shouldThrowExceptionWhenUserNotFound() {
             // GIVEN
             LoginUserDto loginDto = new LoginUserDto("nonexistent", "password123");
@@ -258,7 +249,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN locked account WHEN authenticate is called THEN throws AccountLockedException")
         void shouldThrowExceptionWhenAccountLocked() {
             // GIVEN
             User lockedUser = User.builder()
@@ -283,7 +273,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN disabled account WHEN authenticate is called THEN throws AccountDisabledException")
         void shouldThrowExceptionWhenAccountDisabled() {
             // GIVEN
             User disabledUser = User.builder()
@@ -308,7 +297,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN wrong password WHEN authenticate is called THEN increments failed attempts and throws BadCredentialsException")
         void shouldIncrementFailedAttemptsOnWrongPassword() {
             // GIVEN
             User userWithAttempts = User.builder()
@@ -339,7 +327,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN 5 failed attempts WHEN authenticate fails again THEN locks the account")
         void shouldLockAccountAfterFiveFailedAttempts() {
             // GIVEN
             User userNearLockout = User.builder()
@@ -372,7 +359,6 @@ class AuthenticationServiceTest {
     }
 
     @Nested
-    @DisplayName("refreshToken Tests")
     class RefreshTokenTests {
 
         @Test
@@ -415,7 +401,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN invalid refresh token WHEN refreshToken is called THEN throws InvalidTokenException")
         void shouldThrowExceptionWhenTokenInvalid() {
             // GIVEN
             String invalidToken = "invalid.refresh.token";
@@ -432,7 +417,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN token not found in repository WHEN refreshToken is called THEN throws InvalidTokenException")
         void shouldThrowExceptionWhenTokenNotFoundInRepository() {
             // GIVEN
             String refreshToken = "not.found.token";
@@ -449,7 +433,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN reused token WHEN refreshToken is called THEN revokes all tokens and throws TokenRevokedException")
         void shouldRevokeAllTokensOnTokenReuse() {
             // GIVEN
             String reusedToken = "reused.refresh.token";
@@ -479,11 +462,9 @@ class AuthenticationServiceTest {
     }
 
     @Nested
-    @DisplayName("logout Tests")
     class LogoutTests {
 
         @Test
-        @DisplayName("GIVEN valid refresh token WHEN logout is called THEN revokes the token")
         void shouldRevokeTokenOnLogout() {
             // GIVEN
             String refreshToken = "valid.refresh.token";
@@ -508,7 +489,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent token WHEN logout is called THEN completes silently")
         void shouldCompleteSilentlyWhenTokenNotFound() {
             // GIVEN
             String nonExistentToken = "nonexistent.token";
@@ -523,11 +503,9 @@ class AuthenticationServiceTest {
     }
 
     @Nested
-    @DisplayName("logoutAllDevices Tests")
     class LogoutAllDevicesTests {
 
         @Test
-        @DisplayName("GIVEN valid username WHEN logoutAllDevices is called THEN revokes all user tokens")
         void shouldRevokeAllUserTokens() {
             // GIVEN
             String username = "testuser";
@@ -541,7 +519,6 @@ class AuthenticationServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent username WHEN logoutAllDevices is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFoundForLogoutAll() {
             // GIVEN
             String nonExistentUsername = "nonexistent";

@@ -28,7 +28,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("PermissionService Tests")
 class PermissionServiceTest {
 
     @Mock
@@ -71,11 +70,9 @@ class PermissionServiceTest {
     }
 
     @Nested
-    @DisplayName("getAllPermissions Tests")
     class GetAllPermissionsTests {
 
         @Test
-        @DisplayName("GIVEN permissions exist WHEN getAllPermissions is called THEN returns all permissions")
         void shouldReturnAllPermissions() {
             // GIVEN
             given(permissionRepository.findAll()).willReturn(List.of(readPermission, writePermission));
@@ -96,7 +93,6 @@ class PermissionServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN no permissions exist WHEN getAllPermissions is called THEN returns empty list")
         void shouldReturnEmptyListWhenNoPermissions() {
             // GIVEN
             given(permissionRepository.findAll()).willReturn(List.of());
@@ -112,7 +108,6 @@ class PermissionServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN multiple permissions WHEN getAllPermissions is called THEN preserves all permission details")
         void shouldPreserveAllPermissionDetails() {
             // GIVEN
             Permission detailedPermission = Permission.builder()
@@ -144,7 +139,6 @@ class PermissionServiceTest {
     }
 
     @Nested
-    @DisplayName("createPermission Tests")
     class CreatePermissionTests {
 
         @Test
@@ -185,7 +179,6 @@ class PermissionServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a duplicate permission name WHEN createPermission is called THEN throws DuplicateResourceException")
         void shouldThrowExceptionWhenPermissionAlreadyExists() {
             // GIVEN
             PermissionRequestDto requestDto = new PermissionRequestDto(
@@ -205,7 +198,6 @@ class PermissionServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a permission request with null description WHEN createPermission is called THEN creates permission with null description")
         void shouldCreatePermissionWithNullDescription() {
             // GIVEN
             PermissionRequestDto requestDto = new PermissionRequestDto(
@@ -237,7 +229,6 @@ class PermissionServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN repository save fails WHEN createPermission is called THEN propagates the exception")
         void shouldPropagateExceptionWhenSaveFails() {
             // GIVEN
             PermissionRequestDto requestDto = new PermissionRequestDto(
@@ -258,7 +249,6 @@ class PermissionServiceTest {
     }
 
     @Nested
-    @DisplayName("Permission Creation Edge Cases")
     class PermissionCreationEdgeCases {
 
         @Test
@@ -288,7 +278,6 @@ class PermissionServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN repository called WHEN createPermission succeeds THEN verifies correct interaction order")
         void shouldVerifyCorrectInteractionOrder() {
             // GIVEN
             PermissionRequestDto requestDto = new PermissionRequestDto(

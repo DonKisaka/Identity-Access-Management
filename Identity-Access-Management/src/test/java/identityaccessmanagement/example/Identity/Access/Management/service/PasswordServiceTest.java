@@ -31,7 +31,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("PasswordService Tests")
 class PasswordServiceTest {
 
     @Mock
@@ -67,11 +66,9 @@ class PasswordServiceTest {
     }
 
     @Nested
-    @DisplayName("createPasswordResetToken Tests")
     class CreatePasswordResetTokenTests {
 
         @Test
-        @DisplayName("GIVEN valid email WHEN createPasswordResetToken is called THEN returns token and saves reset token")
         void shouldCreatePasswordResetTokenSuccessfully() {
             // GIVEN
             String email = "test@example.com";
@@ -99,7 +96,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent email WHEN createPasswordResetToken is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenEmailNotFound() {
             // GIVEN
             String nonExistentEmail = "nonexistent@example.com";
@@ -117,7 +113,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN valid email WHEN createPasswordResetToken is called THEN invalidates existing tokens first")
         void shouldInvalidateExistingTokensBeforeCreatingNew() {
             // GIVEN
             String email = "test@example.com";
@@ -136,11 +131,9 @@ class PasswordServiceTest {
     }
 
     @Nested
-    @DisplayName("resetPassword Tests")
     class ResetPasswordTests {
 
         @Test
-        @DisplayName("GIVEN valid token WHEN resetPassword is called THEN updates password and deletes token")
         void shouldResetPasswordSuccessfully() {
             // GIVEN
             String token = "valid-reset-token";
@@ -172,7 +165,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN invalid token WHEN resetPassword is called THEN throws InvalidTokenException")
         void shouldThrowExceptionWhenTokenNotFound() {
             // GIVEN
             String invalidToken = "invalid-token";
@@ -189,7 +181,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN expired token WHEN resetPassword is called THEN throws InvalidTokenException")
         void shouldThrowExceptionWhenTokenExpired() {
             // GIVEN
             String token = "expired-token";
@@ -212,7 +203,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN already used token WHEN resetPassword is called THEN throws InvalidTokenException")
         void shouldThrowExceptionWhenTokenAlreadyUsed() {
             // GIVEN
             String token = "used-token";
@@ -235,11 +225,9 @@ class PasswordServiceTest {
     }
 
     @Nested
-    @DisplayName("changePassword Tests")
     class ChangePasswordTests {
 
         @Test
-        @DisplayName("GIVEN correct current password WHEN changePassword is called THEN updates to new password")
         void shouldChangePasswordSuccessfully() {
             // GIVEN
             String username = "testuser";
@@ -267,7 +255,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent username WHEN changePassword is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFound() {
             // GIVEN
             String nonExistentUsername = "nonexistent";
@@ -284,7 +271,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN incorrect current password WHEN changePassword is called THEN throws InvalidPasswordException")
         void shouldThrowExceptionWhenCurrentPasswordIncorrect() {
             // GIVEN
             String username = "testuser";
@@ -305,7 +291,6 @@ class PasswordServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN valid credentials WHEN changePassword is called THEN verifies password matching before encoding")
         void shouldVerifyCurrentPasswordBeforeChanging() {
             // GIVEN
             String username = "testuser";

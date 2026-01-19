@@ -34,7 +34,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("RoleService Tests")
 class RoleServiceTest {
 
     @Mock
@@ -96,11 +95,9 @@ class RoleServiceTest {
     }
 
     @Nested
-    @DisplayName("getAllRoles Tests")
     class GetAllRolesTests {
 
         @Test
-        @DisplayName("GIVEN roles exist WHEN getAllRoles is called THEN returns all roles")
         void shouldReturnAllRoles() {
             // GIVEN
             given(roleRepository.findAll()).willReturn(List.of(adminRole, userRole));
@@ -121,7 +118,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN no roles exist WHEN getAllRoles is called THEN returns empty list")
         void shouldReturnEmptyListWhenNoRoles() {
             // GIVEN
             given(roleRepository.findAll()).willReturn(List.of());
@@ -136,11 +132,9 @@ class RoleServiceTest {
     }
 
     @Nested
-    @DisplayName("getRoleById Tests")
     class GetRoleByIdTests {
 
         @Test
-        @DisplayName("GIVEN a valid role ID WHEN getRoleById is called THEN returns the role")
         void shouldReturnRoleWhenIdExists() {
             // GIVEN
             Long roleId = 1L;
@@ -158,7 +152,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a non-existent role ID WHEN getRoleById is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenRoleIdNotFound() {
             // GIVEN
             Long nonExistentId = 999L;
@@ -175,11 +168,9 @@ class RoleServiceTest {
     }
 
     @Nested
-    @DisplayName("getRoleByName Tests")
     class GetRoleByNameTests {
 
         @Test
-        @DisplayName("GIVEN a valid role name WHEN getRoleByName is called THEN returns the role")
         void shouldReturnRoleWhenNameExists() {
             // GIVEN
             String roleName = "ADMIN";
@@ -196,7 +187,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a non-existent role name WHEN getRoleByName is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenRoleNameNotFound() {
             // GIVEN
             String nonExistentName = "SUPERADMIN";
@@ -211,11 +201,9 @@ class RoleServiceTest {
     }
 
     @Nested
-    @DisplayName("createRole Tests")
     class CreateRoleTests {
 
         @Test
-        @DisplayName("GIVEN a valid role request WHEN createRole is called THEN creates and returns the role")
         void shouldCreateRoleSuccessfully() {
             // GIVEN
             RoleRequestDto requestDto = new RoleRequestDto("MODERATOR", "Moderator role", Set.of(1L));
@@ -246,7 +234,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a role request with no permissions WHEN createRole is called THEN creates role without permissions")
         void shouldCreateRoleWithoutPermissions() {
             // GIVEN
             RoleRequestDto requestDto = new RoleRequestDto("GUEST", "Guest role", null);
@@ -273,7 +260,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a duplicate role name WHEN createRole is called THEN throws DuplicateResourceException")
         void shouldThrowExceptionWhenRoleAlreadyExists() {
             // GIVEN
             RoleRequestDto requestDto = new RoleRequestDto("ADMIN", "Duplicate admin", null);
@@ -291,7 +277,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a role request with non-existent permission WHEN createRole is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenPermissionNotFound() {
             // GIVEN
             RoleRequestDto requestDto = new RoleRequestDto("MODERATOR", "Moderator role", Set.of(999L));
@@ -309,7 +294,6 @@ class RoleServiceTest {
     }
 
     @Nested
-    @DisplayName("addPermissionToRole Tests")
     class AddPermissionToRoleTests {
 
         @Test
@@ -344,7 +328,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent role WHEN addPermissionToRole is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenRoleNotFoundForAddPermission() {
             // GIVEN
             given(roleRepository.findByName("NONEXISTENT")).willReturn(Optional.empty());
@@ -359,7 +342,6 @@ class RoleServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN non-existent permission WHEN addPermissionToRole is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenPermissionNotFoundForAddPermission() {
             // GIVEN
             given(roleRepository.findByName("USER")).willReturn(Optional.of(userRole));

@@ -33,7 +33,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("UserService Tests")
 class UserServiceTest {
 
     @Mock
@@ -84,11 +83,9 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("getUserByUsername Tests")
     class GetUserByUsernameTests {
 
         @Test
-        @DisplayName("GIVEN a valid username WHEN getUserByUsername is called THEN returns user response")
         void shouldReturnUserWhenUsernameExists() {
             // GIVEN
             String username = "testuser";
@@ -110,7 +107,6 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a non-existent username WHEN getUserByUsername is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUsernameNotFound() {
             // GIVEN
             String nonExistentUsername = "nonexistent";
@@ -129,11 +125,9 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("getUserById Tests")
     class GetUserByIdTests {
 
         @Test
-        @DisplayName("GIVEN a valid ID WHEN getUserById is called THEN returns user response")
         void shouldReturnUserWhenIdExists() {
             // GIVEN
             Long userId = 1L;
@@ -150,7 +144,6 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a non-existent ID WHEN getUserById is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenIdNotFound() {
             // GIVEN
             Long nonExistentId = 999L;
@@ -167,11 +160,9 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("getAllUsers Tests")
     class GetAllUsersTests {
 
         @Test
-        @DisplayName("GIVEN users exist WHEN getAllUsers is called THEN returns paginated users")
         void shouldReturnPaginatedUsers() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 10);
@@ -198,7 +189,6 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN no users exist WHEN getAllUsers is called THEN returns empty page")
         void shouldReturnEmptyPageWhenNoUsers() {
             // GIVEN
             Pageable pageable = PageRequest.of(0, 10);
@@ -216,11 +206,9 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("unlockUser Tests")
     class UnlockUserTests {
 
         @Test
-        @DisplayName("GIVEN a locked user WHEN unlockUser is called THEN user is unlocked and saved")
         void shouldUnlockUserAndSave() {
             // GIVEN
             User lockedUser = User.builder()
@@ -245,7 +233,6 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a non-existent user ID WHEN unlockUser is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFoundForUnlock() {
             // GIVEN
             Long nonExistentId = 999L;
@@ -262,11 +249,9 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("disableUser Tests")
     class DisableUserTests {
 
         @Test
-        @DisplayName("GIVEN an enabled user WHEN disableUser is called THEN user is disabled")
         void shouldDisableUser() {
             // GIVEN
             User enabledUser = User.builder()
@@ -288,7 +273,6 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a non-existent user ID WHEN disableUser is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFoundForDisable() {
             // GIVEN
             given(userRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -302,11 +286,9 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("enableUser Tests")
     class EnableUserTests {
 
         @Test
-        @DisplayName("GIVEN a disabled user WHEN enableUser is called THEN user is enabled")
         void shouldEnableUser() {
             // GIVEN
             User disabledUser = User.builder()
@@ -328,7 +310,6 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("GIVEN a non-existent user ID WHEN enableUser is called THEN throws ResourceNotFoundException")
         void shouldThrowExceptionWhenUserNotFoundForEnable() {
             // GIVEN
             given(userRepository.findById(anyLong())).willReturn(Optional.empty());
