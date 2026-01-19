@@ -20,7 +20,11 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
+    @Mapping(target = "isLocked", ignore = true)
+    @Mapping(target = "failedLoginAttempts", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "lastLogin", ignore = true)
     User toEntity(CreateUserDto dto);
 
     default Set<String> mapRolesToNames(Set<Role> roles) {
