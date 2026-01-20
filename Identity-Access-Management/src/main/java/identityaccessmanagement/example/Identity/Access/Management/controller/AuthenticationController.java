@@ -62,8 +62,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Valid @RequestBody TokenRefreshRequestDto dto) {
-        authenticationService.logout(dto.refreshToken());
+    public ResponseEntity<Void> logout(
+            @Valid @RequestBody TokenRefreshRequestDto dto,
+            HttpServletRequest request
+    ) {
+        String ipAddress = extractIpAddress(request);
+        authenticationService.logout(dto.refreshToken(), ipAddress);
         return ResponseEntity.noContent().build();
     }
 

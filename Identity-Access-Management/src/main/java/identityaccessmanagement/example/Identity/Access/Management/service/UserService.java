@@ -16,10 +16,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final AuditLogService auditLogService;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, AuditLogService auditLogService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.auditLogService = auditLogService;
     }
 
     public UserResponseDto getUserByUsername(String username) {
@@ -47,6 +49,8 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.unlock();
         userRepository.save(user);
+        auditLogService.logEvent(user, "USER_UNLOCKED", "SUCCESS", 
+            "User account unlocked by administrator", null);
     }
 
     @Transactional
@@ -56,6 +60,8 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.setEnabled(false);
         userRepository.save(user);
+        auditLogService.logEvent(user, "USER_DISABLED", "SUCCESS", 
+            "User account disabled by administrator", null);
     }
 
     @Transactional
@@ -65,5 +71,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.setEnabled(true);
         userRepository.save(user);
+        auditLogService.logEvent(user, "USER_ENABLED", "SUCCESS", 
+            "User account enabled by administrator", null);
     }
 }

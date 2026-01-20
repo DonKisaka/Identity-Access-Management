@@ -31,14 +31,16 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AuditLogService auditLogService;
 
-    public AuthenticationService(JwtService jwtService, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RefreshTokenRepository refreshTokenRepository) {
+    public AuthenticationService(JwtService jwtService, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RefreshTokenRepository refreshTokenRepository, AuditLogService auditLogService) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.auditLogService = auditLogService;
     }
 
 
@@ -72,6 +74,8 @@ public class AuthenticationService {
 
         saveRefreshToken(user, refreshToken, ipAddress, userAgent);
 
+        auditLogService.logEvent(user, "USER_SIGNUP", "SUCCESS", "New user registration", ipAddress);
+
         return new AuthenticationResponseDto(accessToken, refreshToken, jwtService.getAccessTokenExpiration());
     }
 
@@ -96,7 +100,7 @@ public class AuthenticationService {
                     )
             );
         } catch (Exception e) {
-            handleFailedLogin(user);
+            handleFailedLogin(user, ipAddress);
             throw new BadCredentialsException();
         }
 
@@ -108,6 +112,8 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
 
         saveRefreshToken(user, refreshToken, ipAddress, userAgent);
+
+        auditLogService.logEvent(user, "USER_LOGIN", "SUCCESS", "User logged in successfully", ipAddress);
 
         return new AuthenticationResponseDto(accessToken, refreshToken, jwtService.getAccessTokenExpiration());
     }
@@ -146,25 +152,32 @@ public class AuthenticationService {
         return new AuthenticationResponseDto(newAccessToken, newRefreshToken, jwtService.getAccessTokenExpiration());
     }
 
-    private void handleFailedLogin(User user) {
+    private void handleFailedLogin(User user, String ipAddress) {
         user.incrementFailedAttempts();
 
         if (user.getFailedLoginAttempts() >= 5) {
             user.lock();
+            auditLogService.logEvent(user, "ACCOUNT_LOCKED", "WARNING", 
+                "Account locked after 5 failed login attempts", ipAddress);
         }
+
+        auditLogService.logEvent(user, "USER_LOGIN", "FAILURE", 
+            "Failed login attempt (" + user.getFailedLoginAttempts() + "/5)", ipAddress);
 
         userRepository.save(user);
     }
 
     @Transactional
-    public void logout(String refreshToken) {
+    public void logout(String refreshToken, String ipAddress) {
         String tokenHash = hashToken(refreshToken);
         RefreshToken storedToken = refreshTokenRepository.findByTokenHash(tokenHash)
                 .orElse(null);
 
         if (storedToken != null) {
+            User user = storedToken.getUser();
             storedToken.revoke("User logout");
             refreshTokenRepository.save(storedToken);
+            auditLogService.logEvent(user, "USER_LOGOUT", "SUCCESS", "User logged out", ipAddress);
         }
     }
 

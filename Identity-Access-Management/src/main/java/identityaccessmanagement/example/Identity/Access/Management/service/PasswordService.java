@@ -23,11 +23,13 @@ public class PasswordService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final AuditLogService auditLogService;
 
-    public PasswordService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository) {
+    public PasswordService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, AuditLogService auditLogService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional
@@ -46,6 +48,10 @@ public class PasswordService {
                 .build();
 
         passwordResetTokenRepository.save(resetToken);
+        
+        auditLogService.logEvent(user, "PASSWORD_RESET_REQUEST", "SUCCESS", 
+            "Password reset token generated", null);
+        
         return token;
     }
 
@@ -65,19 +71,27 @@ public class PasswordService {
 
         resetToken.markAsUsed();
         passwordResetTokenRepository.delete(resetToken);
+        
+        auditLogService.logEvent(user, "PASSWORD_RESET", "SUCCESS", 
+            "Password reset via email token", null);
     }
 
     @Transactional
-    public void changePassword(String username, String currentPassword,  String newPassword) {
+    public void changePassword(String username, String currentPassword, String newPassword) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            auditLogService.logEvent(user, "PASSWORD_CHANGE", "FAILURE", 
+                "Password change failed - incorrect current password", null);
             throw new InvalidPasswordException("Current password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        
+        auditLogService.logEvent(user, "PASSWORD_CHANGE", "SUCCESS", 
+            "Password changed successfully", null);
     }
 
     private String hashToken(String token) {
